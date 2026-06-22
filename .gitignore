@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Build output and caches
+dist/
+build/
+coverage/
+.cache/
+.parcel-cache/
+.vite/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Package manager logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local agent and editor settings
+.agents/
+.codex/
+.vscode/
+.idea/
+*.suo
+*.user
+*.swp
+*.tmp
+
+# Operating system files
+.DS_Store
+Thumbs.db
+Desktop.ini
