@@ -624,6 +624,14 @@
       font: inherit;
     }
 
+    .booking-status {
+      min-height: 24px;
+      margin: 12px 0 0;
+      color: var(--teal);
+      font-weight: 700;
+      text-align: center;
+    }
+
     footer {
       padding: 32px 16px 44px;
       text-align: center;
@@ -991,11 +999,16 @@
             </select>
           </label>
           <label class="full">
+            期望到店时间
+            <input id="appointment-time" name="appointmentTime" type="datetime-local" step="1800" required />
+          </label>
+          <label class="full">
             备注
-            <textarea placeholder="例如体重、毛结、是否怕吹风、期望到店时间"></textarea>
+            <textarea placeholder="例如体重、毛结、是否怕吹风"></textarea>
           </label>
         </div>
-        <button class="btn" type="button">提交预约</button>
+        <button class="btn" type="submit">提交预约</button>
+        <p class="booking-status" role="status" aria-live="polite"></p>
       </form>
     </section>
   </main>
@@ -1048,6 +1061,39 @@
     });
 
     startHeroCarousel();
+
+    const bookingForm = document.querySelector(".booking-form");
+    const appointmentTime = document.querySelector("#appointment-time");
+    const bookingStatus = document.querySelector(".booking-status");
+
+    function toLocalDateTimeValue(date) {
+      const pad = (value) => String(value).padStart(2, "0");
+      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    }
+
+    function updateAppointmentMinimum() {
+      appointmentTime.min = toLocalDateTimeValue(new Date());
+    }
+
+    updateAppointmentMinimum();
+    appointmentTime.addEventListener("focus", updateAppointmentMinimum);
+
+    bookingForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      updateAppointmentMinimum();
+
+      if (!bookingForm.reportValidity()) {
+        return;
+      }
+
+      const arrivalTime = new Date(appointmentTime.value).toLocaleString("zh-CN", {
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      bookingStatus.textContent = `预约已记录，期望到店时间：${arrivalTime}`;
+    });
   </script>
 </body>
 </html>
