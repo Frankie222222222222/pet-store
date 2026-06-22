@@ -1357,11 +1357,19 @@
       return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
     }
 
+    function getTomorrowMorningAppointmentTime() {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(9, 30, 0, 0);
+      return tomorrow;
+    }
+
     function updateAppointmentMinimum() {
       appointmentTime.min = toLocalDateTimeValue(new Date());
     }
 
     updateAppointmentMinimum();
+    appointmentTime.value = toLocalDateTimeValue(getTomorrowMorningAppointmentTime());
     appointmentTime.addEventListener("focus", updateAppointmentMinimum);
 
     bookingForm.addEventListener("submit", (event) => {
