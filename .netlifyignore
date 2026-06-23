@@ -1,0 +1,15 @@
+node_modules/
+.git/
+.agents/
+.codex/
+.vscode/
+.idea/
+server.out.log
+server.err.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.tmp
+Thumbs.db
+Desktop.ini
