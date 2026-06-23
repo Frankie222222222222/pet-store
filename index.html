@@ -1162,15 +1162,15 @@
         <div class="form-grid">
           <label>
             家长姓名
-            <input type="text" placeholder="请输入姓名" />
+            <input name="customerName" type="text" maxlength="50" placeholder="请输入姓名" required />
           </label>
           <label>
             联系电话
-            <input type="tel" placeholder="请输入手机号" />
+            <input name="phone" type="tel" inputmode="numeric" pattern="1[3-9][0-9]{9}" maxlength="11" placeholder="请输入手机号" required />
           </label>
           <label>
             宠物类型
-            <select>
+            <select name="petType" required>
               <option>狗狗</option>
               <option>猫咪</option>
               <option>其他小宠</option>
@@ -1178,7 +1178,7 @@
           </label>
           <label>
             预约服务
-            <select>
+            <select name="serviceType" required>
               <option>基础洗护</option>
               <option>猫咪专护</option>
               <option>造型修剪</option>
@@ -1187,11 +1187,11 @@
           </label>
           <label class="full">
             期望到店时间
-            <input id="appointment-time" name="appointmentTime" type="datetime-local" step="1800" required />
+            <input id="appointment-time" name="appointmentTime" type="datetime-local" required />
           </label>
           <label class="full">
             备注
-            <textarea placeholder="例如体重、毛结、是否怕吹风"></textarea>
+            <textarea name="notes" maxlength="500" placeholder="例如体重、毛结、是否怕吹风"></textarea>
           </label>
         </div>
         <button class="btn" type="submit">提交预约</button>
@@ -1352,33 +1352,54 @@
     const appointmentTime = document.querySelector("#appointment-time");
     const bookingStatus = document.querySelector(".booking-status");
 
-    function toLocalDateTimeValue(date) {
-      const pad = (value) => String(value).padStart(2, "0");
-      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-    }
-
-    function updateAppointmentMinimum() {
-      appointmentTime.min = toLocalDateTimeValue(new Date());
-    }
-
-    updateAppointmentMinimum();
-    appointmentTime.addEventListener("focus", updateAppointmentMinimum);
-
-    bookingForm.addEventListener("submit", (event) => {
+    bookingForm.addEventListener("submit", async (event) => {
       event.preventDefault();
-      updateAppointmentMinimum();
 
       if (!bookingForm.reportValidity()) {
         return;
       }
 
-      const arrivalTime = new Date(appointmentTime.value).toLocaleString("zh-CN", {
-        month: "long",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-      bookingStatus.textContent = `预约已记录，期望到店时间：${arrivalTime}`;
+      const submitButton = bookingForm.querySelector('button[type="submit"]');
+      const formData = new FormData(bookingForm);
+      const appointmentDate = new Date(formData.get("appointmentTime"));
+
+      submitButton.disabled = true;
+      submitButton.textContent = "正在提交...";
+      bookingStatus.textContent = "";
+
+      try {
+        const response = await fetch("/api/appointments", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            customerName: formData.get("customerName"),
+            phone: formData.get("phone"),
+            petType: formData.get("petType"),
+            serviceType: formData.get("serviceType"),
+            appointmentAt: appointmentDate.toISOString(),
+            notes: formData.get("notes"),
+          }),
+        });
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.message || "预约提交失败");
+        }
+
+        const arrivalTime = appointmentDate.toLocaleString("zh-CN", {
+          month: "long",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        bookingStatus.textContent = `预约提交成功，期望到店时间：${arrivalTime}`;
+        bookingForm.reset();
+      } catch (error) {
+        bookingStatus.textContent = error.message || "网络异常，请稍后重试";
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = "提交预约";
+      }
     });
   </script>
 </body>
