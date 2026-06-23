@@ -1349,34 +1349,9 @@
     startReviewCarousel();
 
     const bookingForm = document.querySelector(".booking-form");
-    const appointmentTime = document.querySelector("#appointment-time");
     const bookingStatus = document.querySelector(".booking-status");
 
-<<<<<<< HEAD
     bookingForm.addEventListener("submit", async (event) => {
-=======
-    function toLocalDateTimeValue(date) {
-      const pad = (value) => String(value).padStart(2, "0");
-      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-    }
-
-    function getTomorrowMorningAppointmentTime() {
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      tomorrow.setHours(9, 30, 0, 0);
-      return tomorrow;
-    }
-
-    function updateAppointmentMinimum() {
-      appointmentTime.min = toLocalDateTimeValue(new Date());
-    }
-
-    updateAppointmentMinimum();
-    appointmentTime.value = toLocalDateTimeValue(getTomorrowMorningAppointmentTime());
-    appointmentTime.addEventListener("focus", updateAppointmentMinimum);
-
-    bookingForm.addEventListener("submit", (event) => {
->>>>>>> b168e6a814ccfe13361da72020f4483c383b6239
       event.preventDefault();
 
       if (!bookingForm.reportValidity()) {
